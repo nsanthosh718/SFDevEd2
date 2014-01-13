@@ -1,3 +1,6 @@
+/**
+
+**/
 public with sharing class CampaignReportSnapshot {
 	public Campaign camp										{ get;set; } 
 	public String jsonResp										{ get;set; }
