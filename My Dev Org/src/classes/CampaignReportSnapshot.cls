@@ -1,5 +1,5 @@
 /**
-
+Header...
 **/
 public with sharing class CampaignReportSnapshot {
 	public Campaign camp										{ get;set; } 
