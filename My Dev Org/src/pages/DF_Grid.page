@@ -1,0 +1,12 @@
+<apex:page controller="DF_GridController">
+<apex:form >
+    <apex:pageBlock >
+        <apex:pageBlockTable value="{!Accounts}" var="acc">
+            <apex:column value="{!acc.Id}"/>
+            <apex:column >
+                <apex:inputField value="{!acc.Name}"/>
+            </apex:column>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

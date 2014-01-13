@@ -1,0 +1,18 @@
+<apex:page controller="ContactologyIntCntrl">
+<apex:form >
+    <apex:pageBlock >
+        <apex:pageBlockSection title="Get Contacts from Contactology">
+            <apex:commandButton action="{!doHttpCall}" reRender="results" value="Do HTTP Call"/>
+        </apex:pageBlockSection>
+        
+        <apex:outputPanel id="results">
+            <apex:pageMessages escape="false"></apex:pageMessages>
+            <apex:outputPanel rendered="{!NOT(errorFound)}">
+                <apex:pageBlockSection title="Results">
+                    <apex:outputText value="{!jsonResp}"></apex:outputText>
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

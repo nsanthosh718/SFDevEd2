@@ -1,0 +1,307 @@
+<apex:page controller="EnrollClassController" doctype="html-5.0" sidebar="false" name="EnrollClass"> 
+<apex:includeScript value="{!URLFOR($Resource.JQuery_1_10, 'Jquery_1_10_3/js/jquery_1_9.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.JQuery_1_10, 'Jquery_1_10_3/js/jquery_1_10_3.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_1_10, 'Jquery_1_10_3/css/jqueryUI_flick.css')}"/>
+    <style>
+        .textStyle  { 
+            padding:5px;
+            border-radius:5px;
+            border:1px solid #E6E6E6;
+        }
+    </style>
+    
+<script>
+    var $j = jQuery.noConflict();
+    
+    $j(document).ready(function(){
+        activateButtons();
+    });
+    
+    function activateButtons(){
+        $j("#resetBtn").on('click', function(){
+            location.reload();
+        });
+        
+        $j("#studBtn").on('click', function(){
+            window.open("/apex/NewStudentPage","New Student","width=500,height=400,location=false,resizable=1,scrollbars=1,toolbar=0,titlebar=0");
+            //window.open("/apex/NewStudentPage","NewStudent","height=100, width=100");
+        });
+    }
+    
+    function selectedClass(obj, classId)
+    {
+        
+        var radios = document.getElementsByTagName('input');
+        var value;
+        for (var i = 0; i < radios.length; i++) {
+            if (radios[i].type === 'radio') {
+                radios[i].checked = false;     
+            }
+        }
+        obj.checked = true;
+        
+        selectClass(classId);
+    }
+    
+    function selectedStud(obj, studId)
+    {
+        var checkBoxes = document.getElementsByTagName('input');
+        var value;
+        for (var i = 0; i < checkBoxes.length; i++) {
+            if (checkBoxes[i].type === 'checkbox') {
+                checkBoxes[i].checked = false;     
+            }
+        }
+        obj.checked = true;
+        selectStud(studId);
+    }
+</script>
+<div class="ui-widget ui-widget-content ui-corner-all">
+    <apex:sectionHeader subtitle="Class Enrollment" title="{!today}"/>
+</div>
+<apex:form id="mainForm">
+<apex:actionFunction name="selectClass" action="{!showStudents}" rerender="studPanel" oncomplete="activateButtons();">
+    <apex:param assignTo="{!selectedClassId}" name="selectedClassId" value=""/>
+</apex:actionFunction>
+<apex:actionFunction name="selectStud" action="{!showEdit}" rerender="newEditStudPanel" oncomplete="activateButtons();">
+    <apex:param assignTo="{!selectedStudId}" name="selectedStudId" value=""/> 
+</apex:actionFunction>
+<div class="ui-widget ui-widget-content ui-corner-all">
+    <div style="width:80%;margin:auto;">
+    <br/>
+        <apex:pageBlock id="classBlock" title="Class Section" tabStyle="Class__c">
+            <apex:pageMessages escape="false"></apex:pageMessages>
+            <table style="width:100%;">
+                <tr>
+                    <td colspan="3">
+                        Search: <apex:input type="text" value="{!className}" styleClass="textStyle"/>
+                        <apex:commandButton action="{!searchClasses}" status="searchStatus" reRender="searchResults, classBlock" value="Search" oncomplete="activateButtons();"/>
+                        <apex:actionStatus id="searchStatus" startText="Searching..."></apex:actionStatus>
+                    </td>                
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;">
+                        <apex:outputPanel id="searchResults" rendered="{!IF(searchResSize > 0, true, false)}">
+                            <div class="ui-widget-header ui-corner-all" style="padding:5px;">Search Results</div>
+                            <div class="ui-widget ui-widget-content ui-corner-all" style="padding:5px;">   
+                                <apex:pageBlockTable value="{!searchResult}" var="class">
+                                    <apex:column headerValue="Select">
+                                        <input type="radio" onclick="selectedClass(this, '{!class.Id}');"/>
+                                    </apex:column>
+                                    <apex:column value="{!class.Class_Code__c}"/>
+                                    <apex:column value="{!class.Name}"/>
+                                </apex:pageBlockTable>   
+                            </div>
+                        </apex:outputPanel>
+                    </td>
+                    <td style="width:50%;vertical-align:top;">
+                        <div class="ui-widget-header ui-corner-all" style="padding:5px;">New Class</div>
+                        <div class="ui-widget ui-widget-content ui-corner-all" style="padding:5px;">       
+                            <apex:outputPanel id="editClass" rendered="{!isNew}">
+                                <table >
+                                    <tr>
+                                        <th>
+                                            <apex:outputLabel value="{!$ObjectType.Class__c.fields.Name.label}"></apex:outputLabel>
+                                        </th>
+                                        <td>
+                                            <apex:inputText value="{!clsName}" styleClass="textStyle"/>
+                                        </td>                                            
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <apex:outputLabel value="{!$ObjectType.Class__c.fields.Class_Code__c.label}"></apex:outputLabel>
+                                        </th>
+                                        <td>
+                                            <apex:inputText value="{!clsCode}" styleClass="textStyle"/>
+                                        </td> 
+                                    </tr>
+                                </table>
+                                <!--<apex:outputLabel value="{!$ObjectType.Class__c.fields.Name.label}: ">
+                                    <apex:inputText value="{!clsName}"/>
+                                </apex:outputLabel><br/>
+                                <apex:outputLabel value="{!$ObjectType.Class__c.fields.Class_Code__c.label}: ">
+                                    <apex:inputText value="{!clsCode}"/>
+                                </apex:outputLabel>-->
+                            </apex:outputPanel>
+                            
+                            <apex:outputPanel id="showClass" rendered="{!newClassCreated}">
+                                <table style="padding:5px;">
+                                     <tr class="ui-widget-header">
+                                        <th>Select</th>
+                                        <th>Class Name</th>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="radio" onclick="selectedClass(this, '{!cls.Id}');"/></td>
+                                        <td><apex:outputField value="{!cls.Name}"/></td>
+                                    </tr>
+                                </table>
+                                
+                            </apex:outputPanel>
+                        </div>   
+                    </td>
+                    
+                    <td style="vertical-align:top;">
+                        <div class="ui-widget-header ui-corner-all" style="padding:5px;">Recent Classes</div>
+                        <div class="ui-widget ui-widget-content ui-corner-all" style="padding:5px;">  
+                            <apex:outputPanel id="recClasses">
+                                <apex:pageBlockTable value="{!classes}" var="class">
+                                    <apex:column value="{!class.Class_Code__c}"/>
+                                    <apex:column headerValue="Name">
+                                        <apex:outputField value="{!class.Name}"/>
+                                    </apex:column>
+                                </apex:pageBlockTable>
+                            </apex:outputPanel>      
+                      
+                        </div>  
+                    </td>
+                </tr>
+            </table>
+            
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="New" action="{!showNew}" rendered="{!NOT(isNew)}" reRender="classBlock" oncomplete="activateButtons();"/>
+                <apex:commandButton value="Cancel" action="{!cancel}" rendered="{!isNew}" reRender="classBlock" oncomplete="activateButtons();"/>
+                <apex:commandButton value="Save" action="{!saveAllRecords}"  reRender="classBlock" oncomplete="activateButtons();"/> 
+                <button type="button" id="resetBtn" class="btn" style="padding:5px;">Reset</button>
+                <button type="button" id="studBtn" class="btn" style="padding:5px;">Create New Student</button>
+            </apex:pageBlockButtons>
+         
+            
+            <br/ >
+           
+            
+        
+        <apex:outputPanel id="studPanel">
+            <apex:pageMessages escape="false" rendered="{!isStudMsg}"></apex:pageMessages>
+        <apex:outputPanel rendered="{!classSelected}" >
+        <!--<div class="ui-widget ui-widget-header ui-widget-content" style="padding:5px;">STUDENTS</div>
+            <div class="ui-widget ui-widget-content" style="padding:5px;"> -->
+            <apex:pageBlock id="studBlock" title="Student Section" tabStyle="Student__c">
+                <apex:pageBlockButtons location="top">
+                    <apex:commandButton value="Add Student" action="{!showNewStud}" rendered="{!NOT(isNewStud)}" reRender="studPanel" oncomplete="activateButtons();"/>
+                    <apex:commandButton value="Cancel" action="{!cancel}" rendered="{!isNewStud}" reRender="studPanel" oncomplete="activateButtons();"/>
+                    <apex:commandButton value="Save" action="{!saveStudent}" reRender="studPanel" oncomplete="activateButtons();"/>
+                    <apex:commandButton value="Delete" reRender="studPanel" action="{!deleteStuds}" oncomplete="activateButtons();"/>
+                    
+                </apex:pageBlockButtons>    
+                    <table style="width:100%;">
+                        <tr>
+                            <td colspan="3">
+                                Search: <apex:input type="text" value="{!studName}" styleClass="textStyle"/>
+                                <apex:commandButton action="{!searchStudents}" status="studStatus" reRender="studPanel" value="Search" oncomplete="activateButtons();"/>
+                                <apex:actionStatus id="studStatus" startText="Searching Students..."></apex:actionStatus>
+                            </td>     
+                        </tr>
+                        <tr>
+                            <td style="vertical-align:top;">
+                                <apex:outputPanel id="studResults" rendered="{!IF(studResultSize > 0, true, false)}">
+                                    <div class="ui-widget-header ui-corner-all" style="padding:5px;">Search Results</div>
+                                    <div class="ui-widget ui-widget-content ui-corner-all" style="padding:5px;">   
+                                        <apex:pageBlockTable value="{!studResult}" var="stud">
+                                            <apex:column headerValue="Select">
+                                                <!--<input type="radio" onclick="selectedStud(this, '{!stud.Id}');"/> -->
+                                                <apex:inputCheckbox onclick="selectedStud(this, '{!stud.Id}');" />
+                                            </apex:column>
+                                            <apex:column value="{!stud.Name}"/>
+                                            <apex:column value="{!stud.Name__c}"/>
+                                        </apex:pageBlockTable>   
+                                    </div>
+                                </apex:outputPanel>
+                            </td>
+                            
+                            <!--
+                            <td style="vertical-align:top;">
+                                <apex:outputPanel id="editStudPanel">
+                                    <apex:outputPanel rendered="{!isStudEdit}">
+                                        <div class="ui-widget-header ui-corner-all" style="padding:5px;">Edit Student</div>
+                                        <div class="ui-widget ui-widget-content ui-corner-all" style="padding:5px;">   
+                                            <apex:pageBlockSection columns="1">
+                                                <apex:inputField value="{!stud.Name__c}" />                             
+                                                <apex:inputField value="{!stud.Status__c}"/>
+                                            </apex:pageBlockSection>
+                                        </div>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                                <apex:outputPanel id="newStudPanel">
+                                    <apex:outputPanel rendered="{!isNewStud}">
+                                        <div class="ui-widget-header ui-corner-all" style="padding:5px;">New Student</div>
+                                        <div class="ui-widget ui-widget-content ui-corner-all" style="padding:5px;">  
+                                            <apex:pageBlockTable value="{!studs}" var="stud" id="table">
+                                                <apex:facet name="footer">
+                                                    <apex:commandLink value="Add Row" action="{!addRow}" rerender="table"/>
+                                                </apex:facet>
+                                                <apex:column headerValue="Name">
+                                                    <apex:inputField value="{!stud.Name__c}"/>
+                                                </apex:column>
+                                                <apex:column headerValue="Status">
+                                                    <apex:inputField value="{!stud.Status__c}"/>
+                                                </apex:column>                        
+                                            </apex:pageBlockTable>
+                                            <!--<table style="width:100%;margin:auto;padding:5px;">
+                                                <tr class="ui-widget ui-widget-header">
+                                                    <th>Name</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:inputField value="{!stud.Name__c}" /></td>                              
+                                                    <td><apex:inputField value="{!stud.Status__c}"/></td>               
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>     
+                            </td>-->
+                            <td style="vertical-align:top;">
+                                <apex:outputPanel id="newEditStudPanel">
+                                    <apex:outputPanel rendered="{!OR(isStudEdit, isNewStud)}">
+                                        <div class="ui-widget-header ui-corner-all" style="padding:5px;">New/Edit Student</div>
+                                        <div class="ui-widget ui-widget-content ui-corner-all" style="padding:5px;">   
+                                            <apex:pageBlockSection columns="1">
+                                                <apex:inputField value="{!stud.Name__c}" styleClass="textStyle"/>                             
+                                                <apex:inputField value="{!stud.Status__c}" styleClass="textStyle"/>
+                                            </apex:pageBlockSection>
+                                        </div>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                            </td>
+                            <td style="vertical-align:top;">
+                                <apex:outputPanel rendered="{!IF(existingStudsSize > 0, true, false)}">
+                                    <div class="ui-widget-header ui-corner-all" style="padding:5px;">Existing Students</div>
+                                    <div class="ui-widget ui-widget-content ui-corner-all" style="padding:5px;">   
+                                        <apex:pageBlockTable value="{!studList}" var="eStud">
+                                            <apex:column headerValue="Select">
+                                                <apex:inputCheckbox value="{!eStud.studSelected}"/>
+                                            </apex:column>
+                                            <apex:column value="{!eStud.stud.Name}"/>
+                                            <apex:column value="{!eStud.stud.Name__c}"/>
+                                            <apex:column value="{!eStud.stud.Status__c}"/>
+                                        </apex:pageBlockTable>
+                                        <!--
+                                        <table style="width:100%;margin:auto;padding:5px;">
+                                            <tr class="ui-widget ui-widget-header">
+                                                <th>Student Id</th>
+                                                <th>Name</th>
+                                                <th>Status</th>
+                                            </tr>
+                                            <apex:repeat value="{!studList}" var="eStud">
+                                                <tr>
+                                                    <td><apex:outputField value="{!eStud.stud.Name}" /></td>
+                                                    <td><apex:outputField value="{!eStud.stud.Name__c}" /></td>                              
+                                                    <td><apex:outputField value="{!eStud.stud.Status__c}"/></td>               
+                                                </tr>
+                                            </apex:repeat>
+                                        </table>
+                                        -->
+                                    </div>
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+                    </table>  
+                </apex:pageBlock>
+                </apex:outputPanel>
+           </apex:outputPanel>
+           </apex:pageBlock>
+    </div>
+    
+</div>
+</apex:form>
+</apex:page>

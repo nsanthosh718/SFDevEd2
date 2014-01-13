@@ -1,0 +1,67 @@
+<apex:page standardController="Campaign" extensions="CampaignReportSnapshot" action="{!doHTTPCalltoContactology}">
+<apex:form >
+<apex:pageBlock >
+    <apex:pageBlockSection title="Campaign Report" columns="1">
+        <table style="padding:10px;font-family:Calibri;width:80%;margin:auto;border:1px solid #ccc;">
+            <tr>
+                <th width="25%">Total Sent</th>
+                <td>{!crWrap.TotalSent}</td>
+                <th width="25%">Total Opened</th>
+                <td>{!crWrap.TotalOpened}</td>
+            </tr>
+            <tr>
+                <th>Total Failed</th>
+                <td>{!crWrap.TotalFailed}</td>
+                <th>Percent Opened</th>
+                <td>{!crWrap.PercentOpened}%</td>
+            </tr>
+            <tr>
+                <th>Total Delivered</th>
+                <td>{!crWrap.TotalDelivered}</td>
+                <th>Total Replied</th>
+                <td>{!crWrap.TotalReplied}</td>
+            </tr>
+            <tr>
+                <th>Total Unsent</th>
+                <td>{!crWrap.TotalUnsent}</td>
+                <th>Percent Replied</th>
+                <td>{!crWrap.PercentReplied}%</td>
+            </tr>
+            <tr>
+                <th>Total SoftBounce</th>
+                <td>{!crWrap.TotalSoftBounce}</td>
+                <th>Total HardBounce</th>
+                <td>{!crWrap.TotalHardBounce}</td>
+            </tr>
+            <tr>
+                <th>Percent SoftBounce</th>
+                <td>{!crWrap.PercentSoftBounce}%</td>
+                <th>Percent HardBounce</th>
+                <td>{!crWrap.PercentHardBounce}%</td>
+            </tr>
+            <tr>
+                <th>Created Date</th>
+                <td>{!crWrap.Created}</td>
+                <th>Modified Date</th>
+                <td>{!crWrap.Modified}</td>
+            </tr>
+            
+        </table>
+    </apex:pageBlockSection>
+    
+    <apex:chart animate="true" data="{!crWrap}" height="300" width="800">
+        <apex:axis type="Category" position="left" fields="TotalSent"
+            title="Total Sent" grid="true"/>
+        <apex:axis type="Category" position="right" fields="TotalFailed"
+            title="Total Failed"/>
+        <apex:axis type="Category" position="bottom" fields="name"
+            title="Month of the Year"/>
+        <apex:barSeries title="Campaign Name" orientation="vertical" axis="right"
+            xField="Name" yField="TotalSent">
+            <apex:chartTips height="20" width="120"/>
+        </apex:barSeries>
+       
+    </apex:chart>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

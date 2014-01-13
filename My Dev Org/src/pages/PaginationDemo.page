@@ -1,0 +1,14 @@
+<apex:page controller="PaginationDemo">
+<apex:form >
+    <apex:pageBlock id="AccountsList" title="Accounts">
+        <apex:pageBlockTable value="{!accounts}" var="acc">
+            <apex:column value="{!acc.Id}"/>
+            <apex:column value="{!acc.Name}"/>
+        </apex:pageBlockTable>
+        <br/>
+        <apex:commandLink action="{!firstPage}" value="First | " reRender="AccountsList"/>
+        <apex:commandLink action="{!nextPage}" value="Next | " reRender="AccountsList"/>
+        <apex:commandLink action="{!previousPage}" value="Previous" reRender="AccountsList"/>
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

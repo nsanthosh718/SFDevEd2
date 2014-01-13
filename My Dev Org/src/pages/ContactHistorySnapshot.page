@@ -1,0 +1,43 @@
+<apex:page standardController="Contact" extensions="ContactHistSnapshotExt" action="{!doHTTPCalltoContactology}">
+<apex:form >
+    <apex:pageBlock title="Contact Name: {!con.Name}" tabStyle="Contact">
+    
+        <div style="font-size:1.3em;font-weight:bold;">Status History:</div>
+        <apex:pageBlockTable value="{!jsonToApexObj.statusHistory}" var="sHist" rendered="{!(jsonToApexObj.statusHistory.size > 0)}" >
+            <apex:column value="{!sHist.historyType}" headerValue="History Type"/>
+            <apex:column value="{!sHist.previous_value}" headerValue="Previous Value"/>
+            <apex:column value="{!sHist.new_value}" headerValue="New Value"/>
+            <apex:column value="{!sHist.shDate}" headerValue="Date"/>
+        </apex:pageBlockTable><br/>
+        
+        <div style="font-size:1.3em;font-weight:bold;">Send History:</div>
+        <apex:pageBlockTable value="{!jsonToApexObj.sendHistory}" var="sendHist" rendered="{!(jsonToApexObj.sendHistory.size > 0)}" >
+            <apex:column value="{!sendHist.historyType}" headerValue="History Type"/>
+            <apex:column value="{!sendHist.campaign_name}" headerValue="Campaign Name"/>
+            <apex:column value="{!sendHist.sendHDate}" headerValue="Date"/>
+        </apex:pageBlockTable><br />
+               
+        <div style="font-size:1.3em;font-weight:bold;">Subscription History:</div>
+        <apex:pageBlockTable value="{!jsonToApexObj.subscriptionHistory}" var="subHist" rendered="{!(jsonToApexObj.subscriptionHistory.size > 0)}" >
+            <apex:column value="{!subHist.historyType}" headerValue="History Type"/>
+            <apex:column value="{!subHist.email}" headerValue="Email"/>
+            <apex:column value="{!subHist.subscription_action}" headerValue="Subscription Action"/>
+            <apex:column value="{!subHist.subHDate}" headerValue="Date"/>
+        </apex:pageBlockTable><br/>
+        
+        <div style="font-size:1.3em;font-weight:bold;">Bounce History:</div>
+        <apex:pageBlockTable value="{!jsonToApexObj.bounceHistory}" var="bHist" rendered="{!(jsonToApexObj.subscriptionHistory.size > 0)}" >
+            <apex:column value="{!bHist.historyType}" headerValue="History Type"/>
+            <apex:column value="{!bHist.email}" headerValue="Email"/>
+            <apex:column value="{!bHist.campaign_name}" headerValue="Campaign Name"/>
+            <apex:column value="{!bHist.bDate}" headerValue="Date"/>
+        </apex:pageBlockTable><br/>
+        
+        <apex:pageBlockSection title="RAW JSON Response">
+            <apex:outputText value="{!jsonResp}"></apex:outputText>
+        </apex:pageBlockSection>
+    
+        
+    </apex:pageBlock>
+</apex:form>
+</apex:page>
